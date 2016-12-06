@@ -40,7 +40,7 @@ from osgeo import gdal
 blur = '0x4'
 
 # This will compress the original tif after processing.
-# If space is really tight, compress or delete orthos/
+# If space is really tight, delete original
 spaceIsTight = False
 
 # Set up directories
@@ -202,8 +202,6 @@ os.chdir('scanline')
 makeVrt('mosaic')
 vrtIn = 'mosaic.vrt'
 mosaicXSize, mosaicYSize, mosaicList, mosaicBasename,mosaicPixelX,mosaicPixelY,mosaicULX,mosaicULY = parseVrt(vrtIn)
-print type(mosaicXSize),type(mosaicPixelX)
-
 mosaicLRX = mosaicULX + (int(mosaicXSize)*mosaicPixelX)
 mosaicLRY = mosaicULY + (int(mosaicYSize)*mosaicPixelY)
 # int the corners
@@ -211,8 +209,6 @@ mosaicLRX = int(mosaicLRX)
 mosaicLRY = int(mosaicLRY)
 mosaicULX = int(mosaicULX)
 mosaicULY = int(mosaicULY)
-
-
 # process the exif cmds
 exifProc = 'ls exif*.sh | parallel bash {}'
 os.system(exifProc)
@@ -272,10 +268,10 @@ for mos_tif in mos_tifs:
 	srcCmd = 'composite -compose minus_src little-blur/%s.tif big-blur/%s.tif little-blur/src%s.tif\n' %(basename,basename,basename)
 	thisSH.write(srcCmd)
 	# Apply fwd and rev delta and limit to area of original alpha.
-	corrCmd = 'composite -quiet -compose minus_dst %(basename)s.tif  little-blur/dst%(basename)s.tif -resize %(RasterXSize)s - | composite -quiet -compose plus - little-blur/src%(basename)s.tif -resize %(RasterXSize)s - | convert - \( %(basename)s.tif -channel a -separate +channel \) -alpha off -compose copy_opacity -composite corr/%(basename)s.tif\n ' % args
+	corrCmd = 'composite -quiet -compose minus_dst %(basename)s.tif  little-blur/dst%(basename)s.tif -resize %(RasterXSize)s - | composite -quiet -compose plus - little-blur/src%(basename)s.tif -resize %(RasterXSize)s - | convert - \( %(basename)s.tif -channel a -separate +channel -morphology Erode:8 Disk -blur 0x16 \) -alpha off -compose copy_opacity -composite corr/%(basename)s.tif\n ' % args
 	thisSH.write(corrCmd)
-	seamCmd = 'mogrify -channel a -blur 0x4 -morphology Erode:4 Disk corr/%(basename)s.tif\n' % args
-	thisSH.write(seamCmd)
+	#seamCmd = 'mogrify -channel a -blur 0x4 -morphology Erode:4 Disk corr/%(basename)s.tif\n' % args
+	#thisSH.write(seamCmd)
 	# Clean up intermediate files
 	cleanCmd = 'rm little-blur/dst%(basename)s.tif little-blur/src%(basename)s.tif little-blur/%(basename)s.tif big-blur/%(basename)s.tif\n' % args
 	thisSH.write(cleanCmd)
@@ -284,12 +280,12 @@ for mos_tif in mos_tifs:
 	if spaceIsTight:
 		thisSH.write(gzCmd)
 	thisSH.close()
-
+print 'Start color correction...'
 parallelCmd = 'ls correction-*.sh | parallel -j 16 bash {}'
 os.system(parallelCmd)
 os.system('rm correction-*.sh')
 writerCMD = 'gdalwarp -q -wo SKIP_NOSOURCE=YES -te %s %s %s %s  -srcnodata "0 0 0" -co TILED=YES  corr/*.tif final/%s.tif'
-
+print 'Start writing tiles...'
 counter=0
 offset	= 100000
 os.system('pwd')
