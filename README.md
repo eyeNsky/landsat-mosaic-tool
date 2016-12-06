@@ -3,6 +3,7 @@ Utility to download, pansharpen and mosaic landsat data.
 
 # General workflow for Ubuntu 14.04 on AWS
 Provision VM...log on.
+<pre><code>
 sudo apt-get install unzip
 wget https://github.com/eyeNsky/landsat-mosaic-tool/archive/master.zip
 unzip master.zip
@@ -12,5 +13,5 @@ printf 'echo LC80210382015287LGN00\necho LC80210392015287LGN00\necho LC802104020
 bash scenes.sh | parallel python prep-mosaic.py {}
 cd mosaic
 python ../landsat-mosaic-tool.py
-
+</pre></code>
 The tiled output will be in final/
