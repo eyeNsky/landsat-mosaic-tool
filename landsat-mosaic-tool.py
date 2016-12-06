@@ -29,7 +29,8 @@ http://enblend.sourceforge.net/index.htm
 
 .ExifTool_config has to be in place for exiftool to write the custom tags.
 
-Expects the output from prep-mosiac.py. Specifically that an alpha channel has been added.
+Expects the output from prep-mosiac.py. Specifically that mismarked pixels in the alpha channel have been set to
+black.
 
 
 """
