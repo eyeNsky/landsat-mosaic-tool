@@ -84,7 +84,9 @@ def process(sceneID,procDir):
 		os.system('mkdir temp')
 	if not os.path.isdir(procDir+'/mosaic'):
 		os.system('mkdir %s/mosaic'%procDir)
-
+	#### TODO ####	
+	# this will need to be nearblack to get rid of misplaced alpha pixels from pansharpen
+	# nearblack -of GTiff -o near.tif -setalpha LC80210392015287LGN00_bands_654_pan.TIF	
 	warpCmd = 'gdalwarp -srcnodata "0 0 0" -tr 15 15 -dstalpha  -co TFW=YES -r cubic ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF %(procDir)s/mosaic/%(sceneID)s.tif ' % args
 	os.system(warpCmd)
 	#mvCmd = 'mv ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF %(procDir)s/mosaic/%(sceneID)s.tif ' % args
