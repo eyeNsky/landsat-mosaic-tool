@@ -44,7 +44,7 @@ from xml.dom.minidom import parse
 def init_vm():
 	cmd = '''
 sudo apt-get update
-sudo apt-get -y install imagemagick geotiff-bin enblend exiftool s3cmd gdal-bin python-pip python-gdal python-numpy python-scipy libgdal-dev libatlas-base-dev gfortran libfreetype6-dev parallel 
+sudo apt-get -y htop install imagemagick geotiff-bin enblend exiftool s3cmd gdal-bin python-pip python-gdal python-numpy python-scipy libgdal-dev libatlas-base-dev gfortran libfreetype6-dev parallel 
 sudo pip install Cython
 sudo pip install landsat-util
 '''
@@ -85,12 +85,14 @@ def process(sceneID,procDir):
 	if not os.path.isdir(procDir+'/mosaic'):
 		os.system('mkdir %s/mosaic'%procDir)
 	#### TODO ####	
-	# this will need to be nearblack to get rid of misplaced alpha pixels from pansharpen
-	#nearCmd = 'nearblack -of GTiff -o %(procDir)s/mosaic/%(sceneID)s.tif -setalpha ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF	' % args
-	warpCmd = 'gdalwarp -srcnodata "0 0 0" -tr 15 15 -dstalpha  -co TFW=YES -r cubic ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF %(procDir)s/mosaic/%(sceneID)s.tif ' % args
+	# this needs nearblack to get rid of misplaced alpha pixels from pansharpen
+	nearCmd = 'nearblack -of GTiff -o %(procDir)s/mosaic/nb_%(sceneID)s.tif -setalpha ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF ' % args
+	os.system(nearCmd)
+	# warp to uniform resolution
+	warpCmd = 'gdalwarp -srcnodata "0 0 0" -tr 15 15 -dstalpha  -co TFW=YES -r cubic %(procDir)s/mosaic/nb_%(sceneID)s.tif %(procDir)s/mosaic/%(sceneID)s.tif ' % args
 	os.system(warpCmd)
-	#mvCmd = 'mv ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF %(procDir)s/mosaic/%(sceneID)s.tif ' % args
-	#os.system(mvCmd)
+	rmCmd = 'rm  %(procDir)s/mosaic/nb_%(sceneID)s.tif' % args
+	#os.system(rmCmd)
 	tfwCmd = 'listgeo -tfw %(procDir)s/mosaic/%(sceneID)s.tif ' % args
 	os.system(tfwCmd)
 	infoCmd = 'gdalinfo -stats %(procDir)s/mosaic/%(sceneID)s.tif' % args
