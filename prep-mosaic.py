@@ -86,10 +86,10 @@ def process(sceneID,procDir):
 		os.system('mkdir %s/mosaic'%procDir)
 	#### TODO ####	
 	# this needs nearblack to get rid of misplaced alpha pixels from pansharpen
-	nearCmd = 'nearblack -of GTiff -o %(procDir)s/mosaic/nb_%(sceneID)s.tif -setalpha ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF ' % args
+	nearCmd = 'nearblack -of GTiff -o ~/landsat/processed/%(sceneID)s/nb_%(sceneID)s.tif -setalpha ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF ' % args
 	os.system(nearCmd)
 	# warp to uniform resolution
-	warpCmd = 'gdalwarp -srcnodata "0 0 0" -tr 15 15 -dstalpha  -co TFW=YES -r cubic %(procDir)s/mosaic/nb_%(sceneID)s.tif %(procDir)s/mosaic/%(sceneID)s.tif ' % args
+	warpCmd = 'gdalwarp -srcnodata "0 0 0" -tr 15 15 -dstalpha  -co TFW=YES -r cubic ~/landsat/processed/%(sceneID)s/nb_%(sceneID)s.tif %(procDir)s/mosaic/%(sceneID)s.tif ' % args
 	os.system(warpCmd)
 	rmCmd = 'rm  %(procDir)s/mosaic/nb_%(sceneID)s.tif' % args
 	#os.system(rmCmd)
