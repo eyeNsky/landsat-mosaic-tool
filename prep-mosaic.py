@@ -44,7 +44,7 @@ from xml.dom.minidom import parse
 def init_vm():
 	cmd = '''
 sudo apt-get update
-sudo apt-get -y htop install imagemagick geotiff-bin enblend exiftool s3cmd gdal-bin python-pip python-gdal python-numpy python-scipy libgdal-dev libatlas-base-dev gfortran libfreetype6-dev parallel 
+sudo apt-get -y install htop imagemagick geotiff-bin enblend exiftool s3cmd gdal-bin python-pip python-gdal python-numpy python-scipy libgdal-dev libatlas-base-dev gfortran libfreetype6-dev parallel 
 sudo pip install Cython
 sudo pip install landsat-util
 '''
