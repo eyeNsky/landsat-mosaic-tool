@@ -89,9 +89,9 @@ def process(sceneID,procDir):
 	nearCmd = 'nearblack -of GTiff -o ~/landsat/processed/%(sceneID)s/nb_%(sceneID)s.tif -setalpha ~/landsat/processed/%(sceneID)s/%(sceneID)s_bands_654_pan.TIF ' % args
 	os.system(nearCmd)
 	# warp to uniform resolution
-	warpCmd = 'gdalwarp -srcnodata "0 0 0" -tr 15 15 -dstalpha  -co TFW=YES -r cubic ~/landsat/processed/%(sceneID)s/nb_%(sceneID)s.tif %(procDir)s/mosaic/%(sceneID)s.tif ' % args
+	warpCmd = 'gdalwarp -tr 15 15 -co TFW=YES -r cubic ~/landsat/processed/%(sceneID)s/nb_%(sceneID)s.tif %(procDir)s/mosaic/%(sceneID)s.tif ' % args
 	os.system(warpCmd)
-	rmCmd = 'rm  %(procDir)s/mosaic/nb_%(sceneID)s.tif' % args
+	rmCmd = 'rm  ~/landsat/processed/%(sceneID)s/nb_%(sceneID)s.tif' % args
 	#os.system(rmCmd)
 	tfwCmd = 'listgeo -tfw %(procDir)s/mosaic/%(sceneID)s.tif ' % args
 	os.system(tfwCmd)
