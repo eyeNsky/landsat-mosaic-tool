@@ -30,7 +30,7 @@ http://enblend.sourceforge.net/index.htm
 .ExifTool_config has to be in place for exiftool to write the custom tags.
 
 Expects the output from prep-mosaic.py. Specifically that mismarked pixels in the alpha channel have been set to
-black.
+black and the data have all been warped to a uniform resolution.
 
 
 """
@@ -56,7 +56,7 @@ if not os.path.isdir('corr'):
 #############################################################################
 # Switches for exiftool and enblend
 exifSw = 'exiftool -overwrite_original_in_place -ResolutionUnit=inches -XPosition=%s -YPosition=%s -XResolution=1 -YResolution=1 %s'
-enblendSw = 'enblend -f %sx%s --no-optimize -a -o ../big-blur/%s.tif LC*.tif'
+enblendSw = 'enblend-mp --fine-mask -f %sx%s --no-optimize -a -o ../big-blur/%s.tif LC*.tif'
 # 
 #############################################################################
 # got to have this at ~/.ExifTool_config
